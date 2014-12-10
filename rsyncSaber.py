@@ -3,13 +3,15 @@
 import os,sys
 
 def scan(ips,port,userpass):
-	f=open('result.txt','a+')
+	f=open('/root/Desktop/result.txt','a+')
 	for ip in ips:
+		print ip
 		cmd = 'rsync %s:: --port=%s --timeout=5 --contimeout=2' % (ip,port)
 		dirs = []
 		for line in os.popen(cmd):
 			line = line.strip().split(' ')[-1]
-			f.write(ip+'||'+port+'||root without pass')
+			f.write(ip+'||'+port+'||root without pass'+'\n')
+			print ip+'||'+port+'||root without pass'
 			if line != '.':
 				dirs.append(line)
 		if len(dirs) > 0:
@@ -19,7 +21,8 @@ def scan(ips,port,userpass):
 				the_dir = dirs[1]
 				cmd = 'rsync %s@%s::%s --port=%s --password-file="pwd.txt" --timeout=5 --contimeout=2' %(user,ip,the_dir,port)
 				if os.popen(cmd).read():
-					f.write(ip+'||'+port+'||'+pwd)
+					f.write(ip+'||'+port+'||'+pwd+'\n')
+					print ip+'||'+port+'||'+pwd
 					break
 	f.close()
 
@@ -34,7 +37,7 @@ if __name__ == '__main__':
 	except:
 		print 'integer only and port is set to 873!'
 		port = '873'
-	ff = open('/root/desktop/ip.txt')
+	ff = open('/root/Desktop/ip.txt')
 	ips = []
 	for ip in ff.readlines():
 		ips.append(ip.strip())
@@ -42,15 +45,4 @@ if __name__ == '__main__':
 	userpass = ['111111','123456','']
 	
 	print 'check start ...'
-	scan(ips,port,dir,userpass)
-
-	cmd = 'rsync %s:: --port=%s' % (ip,port)
-	for line in os.popen(cmd):
-		dirs = []
-		dir=line.rstrip()
-		if dir not in dirlist:
-			dirlist.append(dir)
-
-	for dir in dirlist:
-		print 'Test dir:' + dir
-		scan(ips,port,dir,userpass)
+	scan(ips,port,userpass)
