@@ -6,16 +6,19 @@ def scan(ips,port,userpass):
 	f=open('/root/Desktop/result.txt','a+')
 	for ip in ips:
 		print ip
+		isok = 0
 		cmd = 'rsync %s:: --port=%s --contimeout=2' % (ip,port)
 		dirs = []
 		for line in os.popen(cmd):
 			line = line.strip().split(' ')[-1]
-			f.write(ip+'||'+port+'||root without pass'+'\n')
-			print ip+'||'+port+'||root without pass'
+			isok = 1
 			if line != '.':
 				dirs.append(line)
+		if isok:
+			f.write(ip+'||'+port+'||root without pass'+'\n')
+			print ip+'||'+port+'||root without pass'
 		if len(dirs) > 0:
-			for user,pwd in userpass:
+			for pwd in userpass:
 				os.system('echo '+pwd+' > pwd.txt')
 				os.system('chmod 777 pwd.txt')
 				the_dir = dirs[1]
@@ -42,7 +45,7 @@ if __name__ == '__main__':
 	for ip in ff.readlines():
 		ips.append(ip.strip())
 	
-	userpass = ['111111','123456','']
+	userpass = ['','111111','123456']
 	
 	print 'check start ...'
 	scan(ips,port,userpass)
